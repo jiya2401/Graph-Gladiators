@@ -1,0 +1,9 @@
+src/App.tsx(3,10): error TS1484: 'GraphData' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/Arena.tsx(2,10): error TS1484: 'GraphData' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/Arena.tsx(2,21): error TS6133: 'GraphEngine' is declared but its value is never read.
+src/components/BattleSimulation.tsx(2,10): error TS1484: 'GraphData' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/BattleSimulation.tsx(2,34): error TS1484: 'GraphProperties' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/GraphPicker.tsx(2,10): error TS1484: 'GraphData' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/GraphPicker.tsx(64,25): error TS2741: Property 'links' is missing in type 'GraphData' but required in type 'GraphData<{ [others: string]: any; id?: string | number | undefined; x?: number | undefined; y?: number | undefined; vx?: number | undefined; vy?: number | undefined; fx?: number | undefined; fy?: number | undefined; }, LinkObject<...>>'.
+src/lib/GraphFactory.ts(1,10): error TS1484: 'GraphData' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/lib/GraphFactory.ts(3,7): error TS6133: 'randId' is declared but its value is never read.
