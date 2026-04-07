@@ -1,5 +1,3 @@
-export type NodeType = string;
-
 export interface GraphNode {
     id: string;
     name?: string;
@@ -11,11 +9,14 @@ export interface GraphEdge {
     source: string;
     target: string;
     directed: boolean;
+    weight?: number;
 }
 
 export interface GraphData {
     nodes: GraphNode[];
     edges: GraphEdge[];
+    directed?: boolean;
+    weighted?: boolean;
 }
 
 export interface GraphProperties {
@@ -26,6 +27,8 @@ export interface GraphProperties {
     hasCycles: boolean;
     isTree: boolean;
     isComplete: boolean;
+    avgCentrality: number;
+    avgShortestPath: number;
     powerScore: number;
     abilities: string[];
 }
@@ -106,37 +109,89 @@ export class GraphEngine {
         return false;
     }
 
+    // Compute degree centrality: degree(v) / (n - 1) for undirected
+    getDegreeCentrality(): Map<string, number> {
+        const V = this.graph.nodes.length;
+        if (V <= 1) return new Map();
+        const adj = this.getAdjacencyList();
+        const centrality = new Map<string, number>();
+        this.graph.nodes.forEach(n => {
+            centrality.set(n.id, (adj.get(n.id)?.length ?? 0) / (V - 1));
+        });
+        return centrality;
+    }
+
+    // Average degree centrality across all nodes
+    getAvgCentrality(): number {
+        const centrality = this.getDegreeCentrality();
+        if (centrality.size === 0) return 0;
+        let total = 0;
+        centrality.forEach(c => (total += c));
+        return total / centrality.size;
+    }
+
+    // BFS-based shortest path length between two nodes
+    bfsDistance(from: string, to: string): number {
+        const adj = this.getAdjacencyList();
+        const dist = new Map<string, number>();
+        dist.set(from, 0);
+        const queue = [from];
+        while (queue.length) {
+            const curr = queue.shift()!;
+            for (const nb of adj.get(curr) ?? []) {
+                if (!dist.has(nb)) {
+                    dist.set(nb, dist.get(curr)! + 1);
+                    queue.push(nb);
+                }
+            }
+        }
+        return dist.get(to) ?? Infinity;
+    }
+
+    // Average shortest path length (for connected graphs)
+    getAvgShortestPath(): number {
+        const nodes = this.graph.nodes;
+        if (nodes.length <= 1) return 0;
+        if (!this.checkConnectivity()) return 0;
+        let total = 0;
+        let count = 0;
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const d = this.bfsDistance(nodes[i].id, nodes[j].id);
+                if (d !== Infinity) {
+                    total += d;
+                    count++;
+                }
+            }
+        }
+        return count > 0 ? total / count : 0;
+    }
+
     analyze(): GraphProperties {
         const V = this.graph.nodes.length;
         const E = this.graph.edges.length;
         const isConnected = this.checkConnectivity();
         const hasCycles = this.detectCycle();
         const density = this.getDensity();
+        const avgCentrality = this.getAvgCentrality();
+        const avgShortestPath = isConnected ? this.getAvgShortestPath() : 0;
 
-        // Properties
         const isTree = isConnected && V - 1 === E && !hasCycles;
         const isComplete = density === 1;
 
-        let powerScore = V * 10 + E * 5;
-        let abilities: string[] = [];
+        // Power score formula (matches problem spec weights):
+        // Nodes × 1 + Edges × 2 + Connectivity × 30 + Density × 200 + Centrality × 300 + Cycles × 20
+        let powerScore = V * 1 + E * 2 + (isConnected ? 30 : 0) + density * 200 + avgCentrality * 300 + (hasCycles ? 20 : 0);
+        const abilities: string[] = [];
 
-        if (isConnected) {
-            powerScore += 20;
-        }
-        if (hasCycles) {
-            powerScore += 15; // Strategic attack boost
-            abilities.push('Attack Boost (Cyclic)');
-        }
-        if (isTree) {
-            powerScore += 25; // Stability
-            abilities.push('High Stability (Tree)');
-        }
+        if (isConnected) abilities.push('Connected Graph');
+        if (hasCycles) abilities.push('Attack Boost (Cyclic)');
+        if (isTree) abilities.push('High Stability (Tree)');
         if (density > 0.8) {
-            powerScore += 30; // High Energy
+            powerScore += 30;
             abilities.push('High Energy (Dense)');
         }
-
-        // More edges / more damage power
+        if (isComplete) abilities.push('Complete Graph');
 
         return {
             nodeCount: V,
@@ -146,6 +201,8 @@ export class GraphEngine {
             hasCycles,
             isTree,
             isComplete,
+            avgCentrality,
+            avgShortestPath,
             powerScore,
             abilities
         };
