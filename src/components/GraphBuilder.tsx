@@ -32,7 +32,9 @@ export default function GraphBuilder({ onChange, color }: Props) {
     const [isWeighted, setIsWeighted] = useState(false);
     const [nodeCounter, setNodeCounter] = useState(1);
     const [deleteMode, setDeleteMode] = useState(false);
-    // Monotonically increasing counter used to generate unique edge IDs
+    // A ref (not state) is used for the edge counter because incrementing it
+    // must not trigger a re-render, and it must be stable across closure captures
+    // in event handlers without needing to be in the dependency array.
     const edgeCounter = useRef(0);
 
     // Convert SVG mouse event to SVG coordinate space

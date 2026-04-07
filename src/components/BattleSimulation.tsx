@@ -238,10 +238,13 @@ function PlayerCard({
     phase: string;
     side: 1 | 2;
 }) {
-    const color = side === 1 ? 'blue' : 'red';
+    // Use explicit full class names — Tailwind JIT requires static strings
     const borderClass = isWinner
-        ? `border-${color}-500 shadow-[0_0_30px_rgba(${side === 1 ? '59,130,246' : '239,68,68'},0.5)] bg-${color}-900/20`
+        ? side === 1
+            ? 'border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.5)] bg-blue-900/20'
+            : 'border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.5)] bg-red-900/20'
         : 'border-slate-700 bg-slate-800';
+    const labelClass = side === 1 ? 'text-blue-400' : 'text-red-400';
 
     return (
         <motion.div
@@ -259,7 +262,7 @@ function PlayerCard({
             transition={{ duration: phase === 'clashing' ? 0.25 : 0.5, repeat: phase === 'clashing' ? 4 : 0 }}
             className={`flex-1 p-5 rounded-2xl border-2 transition-all ${borderClass}`}
         >
-            <h3 className={`text-xl font-bold mb-4 text-${color}-400`}>{label}</h3>
+            <h3 className={`text-xl font-bold mb-4 ${labelClass}`}>{label}</h3>
 
             {/* Score */}
             <div className="flex justify-between items-end border-b border-slate-700 pb-3 mb-3">

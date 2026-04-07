@@ -86,10 +86,7 @@ def analyze(data: dict) -> dict:
     if V > 1 and is_connected:
         try:
             weight_attr = "weight" if weighted else None
-            if directed:
-                lengths = dict(nx.all_pairs_dijkstra_path_length(G, weight=weight_attr))
-            else:
-                lengths = dict(nx.all_pairs_dijkstra_path_length(G, weight=weight_attr))
+            lengths = dict(nx.all_pairs_dijkstra_path_length(G, weight=weight_attr))
 
             total = 0.0
             count = 0

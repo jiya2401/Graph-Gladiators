@@ -150,7 +150,8 @@ function buildExplanation(winnerNum, winnerStats, loserStats) {
     return `Player ${winnerNum} wins by ${diff} points${reasonStr}!`;
 }
 
-const PORT = process.env.PORT ?? 3001;
+const rawPort = process.env.PORT;
+const PORT = rawPort && /^\d+$/.test(rawPort) ? parseInt(rawPort, 10) : 3001;
 app.listen(PORT, () => {
     console.log(`\n🗡️  Graph Gladiators Server running on http://localhost:${PORT}`);
     console.log(`   POST /analyze  – analyze a single graph`);
