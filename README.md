@@ -2,7 +2,8 @@
 
 > **Two players create graphs — algorithms decide who wins.**
 >
-> Build directed or undirected graphs, let the system compute graph-theory metrics via Python/NetworkX, and watch animated battle simulations determine the structural champion.
+> Build directed or undirected graphs, let the system compute graph-theory metrics via Python/NetworkX, and watch animated battle simulations determine the structural champion. https://graph-gladiators-1.onrender.com/
+> https://graph-gladiators.onrender.com/ for backend 
 
 ---
 
